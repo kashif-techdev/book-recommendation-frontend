@@ -1,0 +1,51 @@
+############################
+# ENVIRONMENT VARIABLES
+############################
+.env
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+############################
+# NODE / PACKAGE MANAGERS
+############################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+############################
+# NEXT.JS BUILD OUTPUT
+############################
+.next/
+out/
+
+############################
+# TESTING / COVERAGE
+############################
+coverage/
+.nyc_output/
+
+############################
+# VERCEL
+############################
+.vercel/
+
+############################
+# OS / EDITORS
+############################
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+############################
+# MISC
+############################
+*.log
+*.tgz
+*.bak
+*.tmp
