@@ -45,7 +45,7 @@ export default function Footer() {
               className="flex gap-4"
             >
               <a
-                href="https://github.com/kashif-techdev/Book-recommendation-system"
+                href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
@@ -61,7 +61,7 @@ export default function Footer() {
                 <Twitter className="w-5 h-5" />
               </a>
               <a
-                href="kashif.techdev@gmail.com"
+                href="mailto:contact@bookwise.com"
                 className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
               >
                 <Mail className="w-5 h-5" />
@@ -113,7 +113,7 @@ export default function Footer() {
               <li>TypeScript</li>
               <li>Tailwind CSS</li>
               <li>Framer Motion</li>
-              <li>Fast API</li>
+              <li>Flask API</li>
             </motion.ul>
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function Footer() {
           className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center"
         >
           <p className="text-gray-400 text-sm">
-            © 2026 BookWise. Made with{' '}
+            © 2024 BookWise. Made with{' '}
             <Heart className="inline w-4 h-4 text-red-500 mx-1" />
             for book lovers everywhere.
           </p>
