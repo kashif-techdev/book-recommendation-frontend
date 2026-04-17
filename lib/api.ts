@@ -1,10 +1,23 @@
 import axios from 'axios'
 import { RecommendationRequest, RecommendationResponse, AuthResponse, LoginRequest, RegisterRequest, User, SearchHistoryItem } from './types'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+/**
+ * Base URL for API.
+ * - Prefer NEXT_PUBLIC_API_URL when set (e.g. local dev or Vercel with env at build time).
+ * - In the browser, if no public URL was inlined (common when env was missing at build), use same-origin
+ *   proxy from next.config.js rewrites (/api-backend → backend) so production does not call localhost.
+ */
+function getApiBaseUrl(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '')
+  if (fromEnv) return fromEnv
+  if (typeof window !== 'undefined') {
+    return '/api-backend'
+  }
+  return 'http://localhost:3000'
+}
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getApiBaseUrl(),
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
