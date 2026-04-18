@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { toast } from 'react-hot-toast'
+import { History, X } from 'lucide-react'
 import { Book, SearchFilters, SearchHistoryItem } from '@/lib/types'
 import { bookApi, searchHistoryApi } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
@@ -28,6 +29,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [history, setHistory] = useState<SearchHistoryItem[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
+  const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false)
 
   // Load popular books on initial load
   useEffect(() => {
@@ -39,8 +41,19 @@ export default function Home() {
       loadSearchHistory()
     } else {
       setHistory([])
+      setMobileHistoryOpen(false)
     }
   }, [isAuthenticated])
+
+  useEffect(() => {
+    if (!mobileHistoryOpen) return
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = originalOverflow
+    }
+  }, [mobileHistoryOpen])
 
   const loadPopularBooks = async () => {
     try {
@@ -175,29 +188,40 @@ export default function Home() {
       <main className="relative">
         {/* Search Section - More Prominent and Clean */}
         <section className="py-6 md:py-10 bg-gradient-to-b from-white via-primary-50/20 to-transparent border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
-              {isAuthenticated && (
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45 }}
-                  className="order-1 lg:order-none lg:sticky lg:top-24"
-                >
-                  <SearchHistoryPanel
-                    history={history}
-                    loading={historyLoading}
-                    onDeleteOne={handleDeleteHistoryItem}
-                    onClearAll={handleClearAllHistory}
-                  />
-                </motion.div>
-              )}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:relative">
+            {isAuthenticated && (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45 }}
+                className="hidden lg:block lg:absolute lg:left-8 lg:top-0 lg:w-[300px]"
+              >
+                <SearchHistoryPanel
+                  history={history}
+                  loading={historyLoading}
+                  onDeleteOne={handleDeleteHistoryItem}
+                  onClearAll={handleClearAllHistory}
+                />
+              </motion.div>
+            )}
 
+            {isAuthenticated && (
+              <div className="mb-3 flex lg:hidden">
+                <button
+                  onClick={() => setMobileHistoryOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-xl border border-primary-200 bg-white px-3.5 py-2 text-sm font-medium text-primary-700 shadow-sm hover:bg-primary-50"
+                >
+                  <History className="h-4 w-4" />
+                  Search history
+                </button>
+              </div>
+            )}
+
+            <div className={isAuthenticated ? 'lg:pl-[324px]' : ''}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className={isAuthenticated ? 'order-2 lg:order-none' : ''}
               >
                 <SearchBar
                   onSearch={handleSearch}
@@ -208,6 +232,34 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {isAuthenticated && mobileHistoryOpen && (
+          <>
+            <button
+              aria-label="Close search history"
+              className="fixed inset-0 z-40 bg-black/45 lg:hidden"
+              onClick={() => setMobileHistoryOpen(false)}
+            />
+            <aside className="fixed left-0 top-0 z-50 h-full w-[88%] max-w-sm bg-white p-3 shadow-2xl lg:hidden">
+              <div className="mb-3 flex items-center justify-between border-b border-gray-100 pb-3">
+                <p className="text-sm font-semibold text-gray-900">Search History</p>
+                <button
+                  onClick={() => setMobileHistoryOpen(false)}
+                  className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                  aria-label="Close panel"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <SearchHistoryPanel
+                history={history}
+                loading={historyLoading}
+                onDeleteOne={handleDeleteHistoryItem}
+                onClearAll={handleClearAllHistory}
+              />
+            </aside>
+          </>
+        )}
 
         {/* Results Section - Improved Spacing */}
         <section className="py-6 md:py-10">
