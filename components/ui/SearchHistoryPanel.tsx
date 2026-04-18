@@ -25,7 +25,6 @@ export default function SearchHistoryPanel({
   const historyScrollRef = useRef<HTMLDivElement | null>(null)
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(!collapsibleDesktop)
   const [pendingInitialScroll, setPendingInitialScroll] = useState(false)
-  const [canScrollUp, setCanScrollUp] = useState(false)
   const [canScrollDown, setCanScrollDown] = useState(false)
 
   const formatDate = (isoDate: string) => {
@@ -52,7 +51,6 @@ export default function SearchHistoryPanel({
 
     const updateScrollButtons = () => {
       const maxScrollTop = el.scrollHeight - el.clientHeight
-      setCanScrollUp(el.scrollTop > 8)
       setCanScrollDown(maxScrollTop - el.scrollTop > 8)
     }
 
@@ -76,9 +74,25 @@ export default function SearchHistoryPanel({
     historyScrollRef.current.scrollBy({ top: 220, behavior: 'smooth' })
   }
 
-  const scrollHistoryUp = () => {
-    if (!historyScrollRef.current) return
-    historyScrollRef.current.scrollBy({ top: -220, behavior: 'smooth' })
+  const collapseHistoryList = () => {
+    if (!collapsibleDesktop) return
+
+    const list = historyScrollRef.current
+    if (!list) {
+      setIsDesktopExpanded(false)
+      return
+    }
+
+    // First move to the top, then collapse so it feels like the list goes back up.
+    if (list.scrollTop > 8) {
+      list.scrollTo({ top: 0, behavior: 'smooth' })
+      window.setTimeout(() => {
+        setIsDesktopExpanded(false)
+      }, 260)
+      return
+    }
+
+    setIsDesktopExpanded(false)
   }
 
   return (
@@ -107,10 +121,9 @@ export default function SearchHistoryPanel({
                 <div className="hidden lg:flex items-center gap-1">
                   {isDesktopExpanded && (
                     <button
-                      onClick={scrollHistoryUp}
-                      disabled={!canScrollUp}
-                      className="inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white p-2 text-primary-700 shadow-sm transition-all duration-200 enabled:hover:-translate-y-0.5 enabled:hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40"
-                      aria-label="Scroll up search history"
+                      onClick={collapseHistoryList}
+                      className="inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white p-2 text-primary-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-50"
+                      aria-label="Hide search history list"
                     >
                       <ChevronDown className="h-5 w-5 rotate-180 text-primary-700 transition-transform duration-300" />
                     </button>
