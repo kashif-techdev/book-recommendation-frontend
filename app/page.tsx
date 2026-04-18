@@ -198,6 +198,7 @@ export default function Home() {
                 loading={historyLoading}
                 onDeleteOne={handleDeleteHistoryItem}
                 onClearAll={handleClearAllHistory}
+                collapsibleDesktop
               />
             </div>
           </motion.div>
