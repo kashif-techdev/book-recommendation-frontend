@@ -24,6 +24,7 @@ export default function SearchHistoryPanel({
 }: SearchHistoryPanelProps) {
   const historyScrollRef = useRef<HTMLDivElement | null>(null)
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(!collapsibleDesktop)
+  const [pendingInitialScroll, setPendingInitialScroll] = useState(false)
 
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate)
@@ -34,19 +35,23 @@ export default function SearchHistoryPanel({
     setIsDesktopExpanded(!collapsibleDesktop)
   }, [collapsibleDesktop])
 
+  useEffect(() => {
+    if (!pendingInitialScroll || !historyScrollRef.current) return
+    historyScrollRef.current.scrollBy({
+      top: 140,
+      behavior: 'smooth',
+    })
+    setPendingInitialScroll(false)
+  }, [pendingInitialScroll, isDesktopExpanded])
+
   const scrollHistoryDown = () => {
-    if (!historyScrollRef.current) return
     if (!isDesktopExpanded) {
       setIsDesktopExpanded(true)
-      requestAnimationFrame(() => {
-        historyScrollRef.current?.scrollBy({
-          top: 140,
-          behavior: 'smooth',
-        })
-      })
+      setPendingInitialScroll(true)
       return
     }
 
+    if (!historyScrollRef.current) return
     historyScrollRef.current.scrollBy({ top: 220, behavior: 'smooth' })
   }
 
