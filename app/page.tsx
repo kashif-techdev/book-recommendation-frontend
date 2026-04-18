@@ -176,17 +176,36 @@ export default function Home() {
         {/* Search Section - More Prominent and Clean */}
         <section className="py-6 md:py-10 bg-gradient-to-b from-white via-primary-50/20 to-transparent border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <SearchBar
-                onSearch={handleSearch}
-                onFilterChange={handleFilterChange}
-                isLoading={isLoading}
-              />
-            </motion.div>
+            <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
+              {isAuthenticated && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45 }}
+                  className="order-1 lg:order-none lg:sticky lg:top-24"
+                >
+                  <SearchHistoryPanel
+                    history={history}
+                    loading={historyLoading}
+                    onDeleteOne={handleDeleteHistoryItem}
+                    onClearAll={handleClearAllHistory}
+                  />
+                </motion.div>
+              )}
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className={isAuthenticated ? 'order-2 lg:order-none' : ''}
+              >
+                <SearchBar
+                  onSearch={handleSearch}
+                  onFilterChange={handleFilterChange}
+                  isLoading={isLoading}
+                />
+              </motion.div>
+            </div>
           </div>
         </section>
 
@@ -200,15 +219,6 @@ export default function Home() {
             subtitle={getSectionSubtitle()}
           />
         </section>
-
-        {isAuthenticated && (
-          <SearchHistoryPanel
-            history={history}
-            loading={historyLoading}
-            onDeleteOne={handleDeleteHistoryItem}
-            onClearAll={handleClearAllHistory}
-          />
-        )}
 
         {/* Features Section - More Subtle */}
         <section className="py-12 md:py-16 bg-gradient-to-b from-transparent to-gray-50/50">
