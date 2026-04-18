@@ -109,11 +109,11 @@ export default function Footer() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="space-y-2 text-gray-400"
             >
-              <li>Next.js 14</li>
-              <li>TypeScript</li>
-              <li>Tailwind CSS</li>
-              <li>Framer Motion</li>
-              <li>Flask API</li>
+              <li>Next, Node, Express,</li>
+              <li>nestjs, postgree</li>
+              <li>Machine Learning</li>
+              <li>rest apis</li>
+              <li>Fast API</li>
             </motion.ul>
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function Footer() {
           className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center"
         >
           <p className="text-gray-400 text-sm">
-            © 2024 BookWise. Made with{' '}
+            © 2026 BookWise. Made with{' '}
             <Heart className="inline w-4 h-4 text-red-500 mx-1" />
             for book lovers everywhere.
           </p>
