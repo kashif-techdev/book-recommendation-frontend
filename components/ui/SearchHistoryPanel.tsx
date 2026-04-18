@@ -1,7 +1,8 @@
 'use client'
 
+import { useRef } from 'react'
 import { SearchHistoryItem } from '@/lib/types'
-import { BookOpenText, Clock3, Sparkles, Trash2 } from 'lucide-react'
+import { BookOpenText, ChevronDown, Clock3, Sparkles, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface SearchHistoryPanelProps {
@@ -19,9 +20,19 @@ export default function SearchHistoryPanel({
   onClearAll,
   className,
 }: SearchHistoryPanelProps) {
+  const historyScrollRef = useRef<HTMLDivElement | null>(null)
+
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate)
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  }
+
+  const scrollHistoryDown = () => {
+    if (!historyScrollRef.current) return
+    historyScrollRef.current.scrollBy({
+      top: 220,
+      behavior: 'smooth',
+    })
   }
 
   return (
@@ -57,7 +68,7 @@ export default function SearchHistoryPanel({
               <p className="text-sm text-gray-600">No searches yet. Your activity appears here once you search.</p>
             </div>
           ) : (
-            <div className="history-scroll space-y-2.5 max-h-[24rem] overflow-y-auto pr-1">
+            <div ref={historyScrollRef} className="history-scroll space-y-2.5 max-h-[24rem] overflow-y-auto pr-1">
               {history.map((item) => (
                 <div
                   key={item.id}
@@ -97,6 +108,19 @@ export default function SearchHistoryPanel({
             </div>
           )}
         </div>
+
+        {history.length > 2 && (
+          <div className="hidden lg:flex justify-center pb-3">
+            <button
+              onClick={scrollHistoryDown}
+              className="group inline-flex items-center gap-1 rounded-full border border-primary-200 bg-primary-50/80 px-3 py-1 text-xs font-medium text-primary-700 shadow-sm transition hover:bg-primary-100"
+              aria-label="Scroll down search history"
+            >
+              <span>More</span>
+              <ChevronDown className="h-4 w-4 animate-bounce text-primary-600 transition-transform duration-200 group-hover:translate-y-0.5" />
+            </button>
+          </div>
+        )}
       </div>
     </section>
   )
