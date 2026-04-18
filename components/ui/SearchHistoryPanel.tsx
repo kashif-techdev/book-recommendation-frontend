@@ -12,6 +12,7 @@ interface SearchHistoryPanelProps {
   onClearAll: () => void
   className?: string
   collapsibleDesktop?: boolean
+  onDesktopExpandedChange?: (expanded: boolean) => void
 }
 
 export default function SearchHistoryPanel({
@@ -21,6 +22,7 @@ export default function SearchHistoryPanel({
   onClearAll,
   className,
   collapsibleDesktop = false,
+  onDesktopExpandedChange,
 }: SearchHistoryPanelProps) {
   const historyScrollRef = useRef<HTMLDivElement | null>(null)
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(!collapsibleDesktop)
@@ -35,6 +37,11 @@ export default function SearchHistoryPanel({
   useEffect(() => {
     setIsDesktopExpanded(!collapsibleDesktop)
   }, [collapsibleDesktop])
+
+  useEffect(() => {
+    if (!collapsibleDesktop) return
+    onDesktopExpandedChange?.(isDesktopExpanded)
+  }, [isDesktopExpanded, collapsibleDesktop, onDesktopExpandedChange])
 
   useEffect(() => {
     if (!pendingInitialScroll || !historyScrollRef.current) return
@@ -72,6 +79,20 @@ export default function SearchHistoryPanel({
 
     if (!historyScrollRef.current) return
     historyScrollRef.current.scrollBy({ top: 220, behavior: 'smooth' })
+  }
+
+  const handleDesktopArrowClick = () => {
+    if (!collapsibleDesktop) {
+      scrollHistoryDown()
+      return
+    }
+
+    if (isDesktopExpanded) {
+      collapseHistoryList()
+      return
+    }
+
+    scrollHistoryDown()
   }
 
   const collapseHistoryList = () => {
@@ -118,29 +139,22 @@ export default function SearchHistoryPanel({
                 >
                   Clear all
                 </button>
-                <div className="hidden lg:flex items-center gap-1">
-                  {isDesktopExpanded && (
-                    <button
-                      onClick={collapseHistoryList}
-                      className="inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white p-2 text-primary-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-50"
-                      aria-label="Hide search history list"
-                    >
-                      <ChevronDown className="h-5 w-5 rotate-180 text-primary-700 transition-transform duration-300" />
-                    </button>
+                <button
+                  onClick={handleDesktopArrowClick}
+                  disabled={!collapsibleDesktop && !canScrollDown}
+                  className={cn(
+                    'hidden lg:inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white p-2 text-primary-700 shadow-sm transition-all duration-200 enabled:hover:-translate-y-0.5 enabled:hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40',
+                    collapsibleDesktop ? 'animate-pulse' : ''
                   )}
-
-                  <button
-                    onClick={scrollHistoryDown}
-                    disabled={isDesktopExpanded && !canScrollDown}
+                  aria-label={isDesktopExpanded ? 'Hide search history list' : 'Open search history'}
+                >
+                  <ChevronDown
                     className={cn(
-                      'inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white p-2 text-primary-700 shadow-sm transition-all duration-200 enabled:hover:-translate-y-0.5 enabled:hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40',
-                      collapsibleDesktop ? 'animate-pulse' : ''
+                      'h-5 w-5 text-primary-700 transition-transform duration-300',
+                      isDesktopExpanded ? 'rotate-180' : 'animate-bounce'
                     )}
-                    aria-label={isDesktopExpanded ? 'Scroll down search history' : 'Open search history'}
-                  >
-                    <ChevronDown className="h-5 w-5 animate-bounce text-primary-700 transition-transform duration-300" />
-                  </button>
-                </div>
+                  />
+                </button>
               </div>
             </div>
           </div>

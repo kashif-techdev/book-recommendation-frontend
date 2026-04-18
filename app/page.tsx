@@ -30,6 +30,7 @@ export default function Home() {
   const [history, setHistory] = useState<SearchHistoryItem[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
   const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false)
+  const [desktopHistoryExpanded, setDesktopHistoryExpanded] = useState(false)
 
   // Load popular books on initial load
   useEffect(() => {
@@ -42,6 +43,7 @@ export default function Home() {
     } else {
       setHistory([])
       setMobileHistoryOpen(false)
+      setDesktopHistoryExpanded(false)
     }
   }, [isAuthenticated])
 
@@ -199,6 +201,7 @@ export default function Home() {
                 onDeleteOne={handleDeleteHistoryItem}
                 onClearAll={handleClearAllHistory}
                 collapsibleDesktop
+                onDesktopExpandedChange={setDesktopHistoryExpanded}
               />
             </div>
           </motion.div>
@@ -225,6 +228,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
+              className={desktopHistoryExpanded ? 'lg:pl-[260px] xl:pl-[280px] transition-all duration-300 ease-out' : 'transition-all duration-300 ease-out'}
             >
               <SearchBar
                 onSearch={handleSearch}
