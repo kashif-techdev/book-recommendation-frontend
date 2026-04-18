@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import { History, X } from 'lucide-react'
@@ -31,6 +31,9 @@ export default function Home() {
   const [historyLoading, setHistoryLoading] = useState(false)
   const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false)
   const [desktopHistoryExpanded, setDesktopHistoryExpanded] = useState(false)
+  const [isBackendWaking, setIsBackendWaking] = useState(false)
+  const [wakeRetryCount, setWakeRetryCount] = useState(0)
+  const wakeRetryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Load popular books on initial load
   useEffect(() => {
@@ -57,18 +60,40 @@ export default function Home() {
     }
   }, [mobileHistoryOpen])
 
+  useEffect(() => {
+    return () => {
+      if (wakeRetryTimeoutRef.current) {
+        clearTimeout(wakeRetryTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const loadPopularBooks = async () => {
     try {
       setIsLoading(true)
+      if (wakeRetryTimeoutRef.current) {
+        clearTimeout(wakeRetryTimeoutRef.current)
+        wakeRetryTimeoutRef.current = null
+      }
+
       const response = await bookApi.getPopularBooks()
       
       if (response.success) {
         setBooks(response.data.books.slice(0, filters.limit))
         setHasSearched(false)
+        if (isBackendWaking) {
+          toast.success('Server is awake. Books loaded successfully.')
+        }
+        setIsBackendWaking(false)
+        setWakeRetryCount(0)
       }
     } catch (error) {
       console.error('Error loading popular books:', error)
-      toast.error('Failed to load books. Please try again.')
+      setIsBackendWaking(true)
+      setWakeRetryCount((prev) => prev + 1)
+      wakeRetryTimeoutRef.current = setTimeout(() => {
+        void loadPopularBooks()
+      }, 8000)
     } finally {
       setIsLoading(false)
     }
@@ -94,6 +119,8 @@ export default function Home() {
       if (response.success) {
         setBooks(response.data.books)
         setHasSearched(true)
+        setIsBackendWaking(false)
+        setWakeRetryCount(0)
         toast.success(`Found ${response.data.total} book${response.data.total !== 1 ? 's' : ''}`)
         if (isAuthenticated) {
           loadSearchHistory()
@@ -238,6 +265,20 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
+
+        {isBackendWaking && (
+          <section className="py-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm">
+                <p className="font-semibold">Waking up the server...</p>
+                <p className="mt-1">
+                  Our backend is on Render free tier and may take a few seconds to start. We are retrying automatically every 8s.
+                  {wakeRetryCount > 0 ? ` (attempt ${wakeRetryCount})` : ''}
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
 
         {isAuthenticated && mobileHistoryOpen && (
           <>
