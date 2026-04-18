@@ -190,17 +190,15 @@ export default function Home() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45 }}
-            className="pointer-events-none absolute inset-x-0 top-24 z-20 hidden lg:block"
+            className="pointer-events-none absolute left-0 top-24 z-20 hidden lg:block"
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="w-[300px] pointer-events-auto lg:-ml-5 xl:-ml-8">
-                <SearchHistoryPanel
-                  history={history}
-                  loading={historyLoading}
-                  onDeleteOne={handleDeleteHistoryItem}
-                  onClearAll={handleClearAllHistory}
-                />
-              </div>
+            <div className="w-[300px] pointer-events-auto ml-3 xl:ml-4">
+              <SearchHistoryPanel
+                history={history}
+                loading={historyLoading}
+                onDeleteOne={handleDeleteHistoryItem}
+                onClearAll={handleClearAllHistory}
+              />
             </div>
           </motion.div>
         )}
