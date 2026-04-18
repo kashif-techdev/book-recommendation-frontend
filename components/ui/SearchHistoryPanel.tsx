@@ -25,6 +25,8 @@ export default function SearchHistoryPanel({
   const historyScrollRef = useRef<HTMLDivElement | null>(null)
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(!collapsibleDesktop)
   const [pendingInitialScroll, setPendingInitialScroll] = useState(false)
+  const [canScrollUp, setCanScrollUp] = useState(false)
+  const [canScrollDown, setCanScrollDown] = useState(false)
 
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate)
@@ -44,6 +46,25 @@ export default function SearchHistoryPanel({
     setPendingInitialScroll(false)
   }, [pendingInitialScroll, isDesktopExpanded])
 
+  useEffect(() => {
+    const el = historyScrollRef.current
+    if (!el) return
+
+    const updateScrollButtons = () => {
+      const maxScrollTop = el.scrollHeight - el.clientHeight
+      setCanScrollUp(el.scrollTop > 8)
+      setCanScrollDown(maxScrollTop - el.scrollTop > 8)
+    }
+
+    updateScrollButtons()
+    el.addEventListener('scroll', updateScrollButtons)
+    window.addEventListener('resize', updateScrollButtons)
+    return () => {
+      el.removeEventListener('scroll', updateScrollButtons)
+      window.removeEventListener('resize', updateScrollButtons)
+    }
+  }, [isDesktopExpanded, history.length])
+
   const scrollHistoryDown = () => {
     if (!isDesktopExpanded) {
       setIsDesktopExpanded(true)
@@ -53,6 +74,11 @@ export default function SearchHistoryPanel({
 
     if (!historyScrollRef.current) return
     historyScrollRef.current.scrollBy({ top: 220, behavior: 'smooth' })
+  }
+
+  const scrollHistoryUp = () => {
+    if (!historyScrollRef.current) return
+    historyScrollRef.current.scrollBy({ top: -220, behavior: 'smooth' })
   }
 
   return (
@@ -78,21 +104,30 @@ export default function SearchHistoryPanel({
                 >
                   Clear all
                 </button>
-                <button
-                  onClick={scrollHistoryDown}
-                  className={cn(
-                    'hidden lg:inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white p-2 text-primary-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-50',
-                    collapsibleDesktop ? 'animate-pulse' : ''
+                <div className="hidden lg:flex items-center gap-1">
+                  {isDesktopExpanded && (
+                    <button
+                      onClick={scrollHistoryUp}
+                      disabled={!canScrollUp}
+                      className="inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white p-2 text-primary-700 shadow-sm transition-all duration-200 enabled:hover:-translate-y-0.5 enabled:hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label="Scroll up search history"
+                    >
+                      <ChevronDown className="h-5 w-5 rotate-180 text-primary-700 transition-transform duration-300" />
+                    </button>
                   )}
-                  aria-label={isDesktopExpanded ? 'Scroll down search history' : 'Open search history'}
-                >
-                  <ChevronDown
+
+                  <button
+                    onClick={scrollHistoryDown}
+                    disabled={isDesktopExpanded && !canScrollDown}
                     className={cn(
-                      'h-5 w-5 text-primary-700 transition-transform duration-300',
-                      isDesktopExpanded ? 'animate-bounce' : 'animate-bounce'
+                      'inline-flex items-center justify-center rounded-xl border border-primary-200 bg-white p-2 text-primary-700 shadow-sm transition-all duration-200 enabled:hover:-translate-y-0.5 enabled:hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40',
+                      collapsibleDesktop ? 'animate-pulse' : ''
                     )}
-                  />
-                </button>
+                    aria-label={isDesktopExpanded ? 'Scroll down search history' : 'Open search history'}
+                  >
+                    <ChevronDown className="h-5 w-5 animate-bounce text-primary-700 transition-transform duration-300" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
