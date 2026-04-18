@@ -183,28 +183,33 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/20">
-      <Header />
-      
-      <main className="relative">
-        {/* Search Section - More Prominent and Clean */}
-        <section className="py-6 md:py-10 bg-gradient-to-b from-white via-primary-50/20 to-transparent border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:relative">
-            {isAuthenticated && (
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45 }}
-                className="hidden lg:block lg:absolute lg:left-8 lg:top-0 lg:w-[300px]"
-              >
+      <div className="relative">
+        <Header />
+        {isAuthenticated && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="pointer-events-none absolute inset-x-0 top-24 z-20 hidden lg:block"
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="w-[300px] pointer-events-auto">
                 <SearchHistoryPanel
                   history={history}
                   loading={historyLoading}
                   onDeleteOne={handleDeleteHistoryItem}
                   onClearAll={handleClearAllHistory}
                 />
-              </motion.div>
-            )}
-
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </div>
+      
+      <main className="relative">
+        {/* Search Section - More Prominent and Clean */}
+        <section className="py-6 md:py-10 bg-gradient-to-b from-white via-primary-50/20 to-transparent border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {isAuthenticated && (
               <div className="mb-3 flex lg:hidden">
                 <button
@@ -217,19 +222,17 @@ export default function Home() {
               </div>
             )}
 
-            <div className={isAuthenticated ? 'lg:pl-[324px]' : ''}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <SearchBar
-                  onSearch={handleSearch}
-                  onFilterChange={handleFilterChange}
-                  isLoading={isLoading}
-                />
-              </motion.div>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <SearchBar
+                onSearch={handleSearch}
+                onFilterChange={handleFilterChange}
+                isLoading={isLoading}
+              />
+            </motion.div>
           </div>
         </section>
 
