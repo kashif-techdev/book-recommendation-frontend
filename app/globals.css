@@ -65,9 +65,31 @@ a {
   background: #a8a8a8;
 }
 
+/* Search history specific scrollbar */
+.history-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #a5b4fc #eef2ff;
+  scrollbar-gutter: stable;
+}
+
+.history-scroll::-webkit-scrollbar {
+  width: 7px;
+}
+
+.history-scroll::-webkit-scrollbar-track {
+  background: #eef2ff;
+  border-radius: 999px;
+}
+
+.history-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #818cf8 0%, #a78bfa 100%);
+  border-radius: 999px;
+}
+
 /* Glass morphism effect */
 .glass {
   background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }

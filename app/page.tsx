@@ -193,7 +193,7 @@ export default function Home() {
             className="pointer-events-none absolute inset-x-0 top-24 z-20 hidden lg:block"
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="w-[300px] pointer-events-auto">
+              <div className="w-[300px] pointer-events-auto lg:-ml-5 xl:-ml-8">
                 <SearchHistoryPanel
                   history={history}
                   loading={historyLoading}

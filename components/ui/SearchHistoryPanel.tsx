@@ -57,7 +57,7 @@ export default function SearchHistoryPanel({
               <p className="text-sm text-gray-600">No searches yet. Your activity appears here once you search.</p>
             </div>
           ) : (
-            <div className="space-y-2.5 sm:max-h-[22rem] sm:overflow-y-auto sm:pr-1">
+            <div className="history-scroll space-y-2.5 max-h-[24rem] overflow-y-auto pr-1">
               {history.map((item) => (
                 <div
                   key={item.id}
